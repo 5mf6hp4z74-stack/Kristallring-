@@ -1,4 +1,60 @@
-<!doctype html><html lang="sv"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Kristallvätska – ringtest</title><style>*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 45% 38%,#172039,#050711 70%);color:#f5f4ff;font:15px system-ui,-apple-system,sans-serif;min-height:100dvh}.layout{display:flex;align-items:center;justify-content:center;gap:30px;padding:24px;min-height:100dvh}canvas{width:min(65vw,80vh);height:auto;aspect-ratio:1}aside{width:300px;max-width:100%;background:#151724e8;border:1px solid #ffffff30;border-radius:20px;padding:22px;box-shadow:0 20px 70px #0008}h2{margin:0 0 6px;font-size:22px}p{color:#aeb5cc;margin:0 0 20px;font-size:13px}label{display:flex;justify-content:space-between;margin:18px 0 8px}output{color:#f6a8d6}input[type=range]{width:100%;accent-color:#e9a2d8}button{border:1px solid #ffffff50;border-radius:10px;background:#2d3044;color:white;padding:11px 14px;margin:8px 5px 0 0;cursor:pointer}.note{margin-top:20px;font-size:12px;line-height:1.5;color:#aeb5cc}@media(max-width:850px){.layout{flex-direction:column;padding:12px;gap:0}canvas{width:min(95vw,65vh)}aside{width:min(96vw,450px);padding:18px}}</style><div class="layout"><canvas id="c" width="900" height="900"></canvas><aside><h2>💎 Kristallvätska</h2><p>Separat experiment • Pianotimern är orörd</p><div id="controls"></div><button id="play">▶ Testa nedräkning</button><button id="reset">↺ Återställ</button><div class="note">Glaset är kvar även vid 0 % fyllning. Färgtäckning 0 % ger färglös vätska; rörelse 0 % fryser vågorna. Testa gärna i Safari på iPad.</div></aside></div><script>
+<!doctype html><html lang="sv"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Kristallvätska – Ringtest 2</title><style>*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 45% 38%,#172039,#050711 70%);color:#f5f4ff;font:15px system-ui,-apple-system,sans-serif;min-height:100dvh}.layout{display:flex;align-items:center;justify-content:center;gap:30px;padding:24px;min-height:100dvh}canvas{width:min(65vw,80vh);height:auto;aspect-ratio:1}aside{width:300px;max-width:100%;background:#151724e8;border:1px solid #ffffff30;border-radius:20px;padding:22px;box-shadow:0 20px 70px #0008}h2{margin:0 0 6px;font-size:22px}p{color:#aeb5cc;margin:0 0 20px;font-size:13px}label{display:flex;justify-content:space-between;margin:18px 0 8px}output{color:#f6a8d6}input[type=range]{width:100%;accent-color:#e9a2d8}button{border:1px solid #ffffff50;border-radius:10px;background:#2d3044;color:white;padding:11px 14px;margin:8px 5px 0 0;cursor:pointer}.note{margin-top:20px;font-size:12px;line-height:1.5;color:#aeb5cc}@media(max-width:850px){.layout{flex-direction:column;padding:12px;gap:0}canvas{width:min(95vw,65vh)}aside{width:min(96vw,450px);padding:18px}}</style><div class="layout"><canvas id="c" width="900" height="900"></canvas><aside><h2>💎 Kristallvätska · Test 2</h2><p>Separat experiment • Pianotimern är orörd</p><div id="controls"></div><button id="play">▶ Testa nedräkning</button><button id="reset">↺ Återställ</button><div class="note">Test 2: ingen vit vätskebotten. Glaset finns kvar vid 0 % tid. Färgtäckning 0 % tar bort färgen, och rörelse 0 % fryser vätskans vågor.</div></aside></div><script>
 const defs=[['fill','Tid kvar / vätska',75],['color','Färgtäckning',100],['motion','Vätskans rörelse',55],['glow','Glöd',55],['thick','Ringens tjocklek',55]];let state={};let root=document.getElementById('controls');for(let [id,name,value] of defs){state[id]=value;let l=document.createElement('label');l.innerHTML=`<span>${name}</span><output id="o_${id}">${value} %</output>`;let r=document.createElement('input');r.type='range';r.min=0;r.max=100;r.value=value;r.addEventListener('input',()=>{state[id]=+r.value;document.getElementById('o_'+id).textContent=r.value+' %'});root.append(l,r)}let playing=false;document.getElementById('play').onclick=()=>{playing=!playing;document.getElementById('play').textContent=playing?'⏸ Pausa':'▶ Testa nedräkning'};document.getElementById('reset').onclick=()=>{playing=false;document.getElementById('play').textContent='▶ Testa nedräkning';state.fill=75;document.querySelectorAll('input')[0].value=75;document.getElementById('o_fill').textContent='75 %'};
-const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');let last=0,phase=0;function draw(ms){let dt=Math.min(.05,(ms-last)/1000||0);last=ms;if(playing){state.fill=Math.max(0,state.fill-dt*4);document.querySelectorAll('input')[0].value=state.fill;document.getElementById('o_fill').textContent=Math.round(state.fill)+' %';if(state.fill===0){playing=false;document.getElementById('play').textContent='▶ Testa nedräkning'}}phase+=dt*state.motion/55;let W=900,C=450,r=330,th=45+state.thick*.55,inner=r-th/2,outer=r+th/2;ctx.clearRect(0,0,W,W);ctx.lineCap='round';let tau=Math.PI*2;function circle(rad,width,stroke,blur=0){ctx.beginPath();ctx.arc(C,C,rad,0,tau);ctx.lineWidth=width;ctx.strokeStyle=stroke;ctx.shadowBlur=blur;ctx.shadowColor=stroke;ctx.stroke();ctx.shadowBlur=0}let base=ctx.createLinearGradient(120,100,760,800);base.addColorStop(0,'#c7f6ff20');base.addColorStop(.45,'#ffffff08');base.addColorStop(1,'#d5c5ff27');circle(r,th,base);circle(outer-2,2,'#ffffffaa');circle(inner+2,2,'#d9eaff99');circle(r,th*.88,'#b6ddff08');let n=560,fill=state.fill/100,angle0=-Math.PI/2;ctx.save();ctx.beginPath();ctx.arc(C,C,r,angle0,angle0+tau*fill,false);ctx.lineWidth=th*.82;ctx.strokeStyle='#fff';ctx.stroke();ctx.clip();let colors=['#00e7ff','#2078ff','#c63aff','#ff4da8','#ffae21','#08e6fa'];let opacity=state.color/100;for(let layer=0;layer<5;layer++){ctx.beginPath();for(let i=0;i<=n;i++){let a=angle0+tau*i/n;let wave=(Math.sin(a*5-phase*(.55+layer*.15)+layer*1.5)*6+Math.sin(a*9+phase*.7+layer)*3)*(state.motion===0?1:1);let rr=r+(layer-2)*th*.13+wave;let x=C+Math.cos(a)*rr,y=C+Math.sin(a)*rr;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}let grad=ctx.createConicGradient(angle0,C,C);colors.forEach((col,i)=>grad.addColorStop(i/colors.length,col));grad.addColorStop(1,colors[0]);ctx.strokeStyle=grad;ctx.globalAlpha=opacity*(layer===2?.55:.22);ctx.lineWidth=th*(layer===2?.42:.31);ctx.shadowBlur=state.glow*.24;ctx.shadowColor='#5c8fff';ctx.stroke()}ctx.globalAlpha=1;ctx.shadowBlur=0;ctx.restore();let edge=ctx.createLinearGradient(130,100,750,800);edge.addColorStop(0,'#f7ffff');edge.addColorStop(.35,'#a8d5ff66');edge.addColorStop(.7,'#f7dfffbb');edge.addColorStop(1,'#9fefff');circle(outer,3.4,edge);circle(inner,2.6,edge);circle(r-th*.27,2,'#ffffff45');circle(r+th*.27,2,'#ffffff55');ctx.save();ctx.translate(C,C);for(let i=0;i<7;i++){let a=i*tau/7-.9;let x=Math.cos(a)*outer,y=Math.sin(a)*outer;let g=ctx.createRadialGradient(x,y,0,x,y,18);g.addColorStop(0,'#fff');g.addColorStop(.2,'#e7faff99');g.addColorStop(1,'#ffffff00');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,18,0,tau);ctx.fill()}ctx.restore();requestAnimationFrame(draw)}requestAnimationFrame(draw);
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+let last=0,phase=0;const TAU=Math.PI*2;
+function draw(ms){
+ const dt=Math.min(.05,(ms-last)/1000||0);last=ms;
+ if(playing){state.fill=Math.max(0,state.fill-dt*4);document.querySelectorAll('input')[0].value=state.fill;document.getElementById('o_fill').textContent=Math.round(state.fill)+' %';if(!state.fill){playing=false;document.getElementById('play').textContent='▶ Testa nedräkning'}}
+ phase+=dt*state.motion/55;
+ const C=450,r=320,th=32+state.thick*.72,inner=r-th/2,outer=r+th/2,begin=-Math.PI/2,end=begin+TAU*state.fill/100;
+ ctx.clearRect(0,0,900,900);ctx.lineCap='round';
+ function strokeArc(radius,width,style,start=0,finish=TAU){ctx.beginPath();ctx.arc(C,C,radius,start,finish);ctx.strokeStyle=style;ctx.lineWidth=width;ctx.stroke()}
+ function gradient(stops){let g=ctx.createLinearGradient(180,125,720,780);for(const [p,c] of stops)g.addColorStop(p,c);return g}
+ // The clear, stationary glass tube is drawn independently of liquid.
+ strokeArc(r,th,gradient([[0,'#c7f4ff24'],[.32,'#e3e9ff0c'],[.66,'#c0a8ff22'],[1,'#f3fbff15']]));
+ strokeArc(r-th*.23,th*.12,'#ffffff09');
+ // Liquid is confined to a round-ended arc, without the opaque white backing.
+ if(state.fill>.001){
+  ctx.save();ctx.beginPath();ctx.arc(C,C,r,begin,end);ctx.lineWidth=th*.85;ctx.strokeStyle='#fff';ctx.stroke();ctx.clip();
+  let cg=ctx.createConicGradient(begin,C,C);
+  const stops=[[0,'#04dcfa'],[.16,'#236dff'],[.32,'#b83aff'],[.49,'#ff54c0'],[.67,'#ffae25'],[.83,'#16dbe8'],[1,'#04dcfa']];for(const [p,c] of stops)cg.addColorStop(p,c);
+  ctx.globalAlpha=state.color/100;
+  strokeArc(r,th*.86,cg);
+  // Broad flowing translucent ribbons, with distinctly animated wave crests.
+  for(let layer=0;layer<7;layer++){
+   ctx.beginPath();let count=720;
+   for(let i=0;i<=count;i++){
+    let a=begin+TAU*i/count;
+    let wave=(Math.sin(a*(3.5+layer*.26)-phase*(1.25+layer*.17)+layer*1.7)*.12+Math.sin(a*8.2+phase*(.8+layer*.11)+layer*.9)*.06)*th;
+    let rr=r+(layer-3)*th*.105+wave;
+    let x=C+Math.cos(a)*rr,y=C+Math.sin(a)*rr;
+    if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);
+   }
+   ctx.lineWidth=th*(layer%2?.20:.28);
+   ctx.strokeStyle=['#00f3ff','#126fff','#8a4dff','#ff55cb','#ffb449','#22e6ef','#ffffff'][layer];
+   ctx.globalAlpha=state.color/100*(layer===6?.16:.35);
+   ctx.shadowBlur=state.glow*.17;ctx.shadowColor=ctx.strokeStyle;ctx.stroke();
+  }
+  // Moving curved glints inside the liquid; no stationary white fill.
+  ctx.globalAlpha=state.color/100*.28;ctx.shadowBlur=0;
+  for(let k=0;k<3;k++){
+   ctx.beginPath();for(let i=0;i<=480;i++){let a=begin+TAU*i/480;let rr=r+Math.sin(a*5-phase*(1.3+k*.2)+k*2.1)*th*.14+(k-1)*th*.18;let x=C+Math.cos(a)*rr,y=C+Math.sin(a)*rr;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.lineWidth=th*.055;ctx.strokeStyle='#fff';ctx.stroke();
+  }
+  ctx.restore();
+  // The liquid's leading meniscus is softly rounded.
+  if(state.fill<99.9){ctx.save();ctx.globalAlpha=state.color/100*.65;let x=C+Math.cos(end)*r,y=C+Math.sin(end)*r;let g=ctx.createRadialGradient(x,y,1,x,y,th*.42);g.addColorStop(0,'#f2fbff');g.addColorStop(.35,'#7be9ff');g.addColorStop(1,'#3c65ff00');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,th*.42,0,TAU);ctx.fill();ctx.restore()}
+ }
+ // Thin sharp glass edges and short specular highlights, always visible.
+ const edge=gradient([[0,'#f4ffffed'],[.25,'#a9d9ff88'],[.52,'#f9e9ffca'],[.78,'#d4efff88'],[1,'#f7ffffed']]);
+ strokeArc(outer-1,3.2,edge);strokeArc(inner+1,2.6,edge);
+ strokeArc(r+th*.32,1.3,'#ffffff55');strokeArc(r-th*.32,1.2,'#d8edff55');
+ for(let i=0;i<6;i++){
+  let a=-1.2+i*TAU/6.7;strokeArc(i%2?inner+3:outer-3,2.8,'#ffffffa0',a,a+.12);
+ }
+ for(let i=0;i<5;i++){
+  let a=-1.85+i*TAU/5.3,x=C+Math.cos(a)*outer,y=C+Math.sin(a)*outer;
+  let g=ctx.createRadialGradient(x,y,0,x,y,10+state.glow*.12);g.addColorStop(0,'#ffffffb0');g.addColorStop(.25,'#d4f6ff55');g.addColorStop(1,'#ffffff00');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,10+state.glow*.12,0,TAU);ctx.fill();
+ }
+ requestAnimationFrame(draw)
+}requestAnimationFrame(draw);
 </script></html>
